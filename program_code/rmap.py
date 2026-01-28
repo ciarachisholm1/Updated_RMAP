@@ -5,11 +5,14 @@ import os
 
 
 def main():
+    
     input_path = config.INPUT_PATH
     output_path = config.OUTPUT_PATH
     chitable_path = config.CHITABLE_PATH
     taylor17_path = config.TAYLOR17_PATH
+    fig_path = config.FIG_PATH
 
+   
     print("\nWelcome to Dr. Jo-Anne Brown's Rotation Measure Analysis Program! (RMAP)")
 
     print(f'\nMAKE SURE this path points to the program_code directory, or all of the paths below are absolute:')
@@ -27,10 +30,11 @@ def main():
 
         if run_which.lower() == 's':
             print('\nRunning generate_candidate_sourcelist.py...\n')
-            gcs.main(input_path, output_path, taylor17_path)
-        elif run_which.lower() == 'r':
+            gcs.main(input_path, output_path, taylor17_path, fig_path)
+        elif run_which.lower() == 'r' or run_which.lower() == '':
             print('\nRunning calculate_rm.py...\n')
             crm.main(input_path, output_path, chitable_path)
+        
         elif run_which.lower() == 'q':
             print('\nQuitting program')
         else:
