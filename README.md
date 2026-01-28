@@ -79,7 +79,5 @@ NOTE: This program can not be run from an IDE like PyCharm. It must be run from 
 ## Possible future improvements/fixes
 
 - The pixel flagging feature needs to be implemented.
-- Polarisation angles in the linear fit plot are not restricted to [0, 180], but the slopes are still correct
-- Polarisation angle error bars are too big, but `probfit` is still correct
 - Beam FWHM shape acts unpredictably sometimes
 - It might be worth it to get it running in an IDE...
