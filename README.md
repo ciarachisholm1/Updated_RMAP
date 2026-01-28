@@ -4,6 +4,7 @@ The Rotation Measure Analysis Program - A program designed to calculate Rotation
 - Written by Dr. Jo-Anne Brown
 - Modified by Dr. Cameron Van Eck
 - Ported to Python by Dylan Tuttle
+- Modified by Ciara Chisholm
 
 ## Overview
 
