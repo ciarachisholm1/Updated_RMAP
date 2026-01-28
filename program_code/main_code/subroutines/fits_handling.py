@@ -19,6 +19,18 @@ def read_fits(path_name):
 
 
 def make_xy_arrays(fits_header):
+    """This function takes in a fits header and returns 4 arrays containing pixel information. 
+    Note: This doc string was added by Ciara Chisholm 
+    ARGUMENTS: 
+        - fits_header (FITS file) -- The fits file corresponding to the data you to get coordiantes values. 
+    
+    RETURNS:
+        - x_array (array) -- An array with every column containing the corresponding x coordinate, with the size corresponding the image data of the fits file. 
+        - y_array (array) -- An array with every row containin the corresponding y value, with the shape of the fits image. 
+        - x_long (array)  -- An array with every column containing the corresponding longtidual coordinate, with the shape if the fits image. 
+        - y_lat (array)   -- An array with every row containing the corresponding latitude coordinate, with the shape if the fits image. 
+        """
+    
     size_x = fits_header['NAXIS1']
     size_y = fits_header['NAXIS2']
 
@@ -27,6 +39,7 @@ def make_xy_arrays(fits_header):
     x_long = np.zeros((size_x, size_y))
     y_lat = np.zeros((size_x, size_y))
 
+    # These are the central array values
     long_value = fits_header['CRVAL1']
     long_pix = fits_header['CRPIX1']
     long_delta = fits_header['CDELT1']
@@ -34,8 +47,12 @@ def make_xy_arrays(fits_header):
     lat_value = fits_header['CRVAL2']
     lat_pix = fits_header['CRPIX2']
     lat_delta = fits_header['CDELT2']
-
+    
+    # This took me an embrassingly long time to understand. -Ciara Chisholm
+    
+    # left most long. value = central longitudial value - (number of pixels to the center)*(degrees/pixel)
     long_start = (long_pix - 1) * (-1.0 * long_delta) + long_value
+    # bottom lat. value = central latitude value - (number of pixels to the center)*(degrees/pixel)
     lat_start = (lat_pix - 1) * (-1.0 * lat_delta) + lat_value
 
     for i in range(size_x):

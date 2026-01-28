@@ -8,6 +8,10 @@ import scipy.optimize as opt
 def calculate_annulus(s_ra, s_dec, s_x_array, s_y_array, s_centre_x, s_centre_y, s_stokes_i, threshold, outer_boundary=4):
     """This function takes in various attributes of an array stamp and returns an annulus around the source(s) in order for the local noise to be estimated
     around the source.
+    
+    From IDL: This function is intended to calculate a pixel map identifying which pixels
+    around a source are within a certain region and below a certain Stokes I threshold.
+    The region is defined as a multiple of the theoretical beam size (translated from equatorial to Galactic)
 
     ARGUMENTS:
     - s_ra (float)            -- the right ascension of the source, in degrees
@@ -24,6 +28,7 @@ def calculate_annulus(s_ra, s_dec, s_x_array, s_y_array, s_centre_x, s_centre_y,
     - foreground_pixels (2D ndarray) -- a 2D array containing 1s and 0s, where 1 represents a pixel outside the annulus boundary and a 0 represents a pixel
                                         inside the annulus boundary
     """
+
     min_beams = 5  # minimum foreground area needed, in multiples of beam solid angle (NOT FWHM ellipse areas!)
 
     # Theoretical beam parameters:
@@ -33,31 +38,38 @@ def calculate_annulus(s_ra, s_dec, s_x_array, s_y_array, s_centre_x, s_centre_y,
     # and the position angle is always zero (meaning every beam ellipse is oriented 'pointing' towards the celestial north pole, 0 deg RA, 90 deg Dec)
     # In galactic coordinates, that position angle is no longer zero, and changes with latitude and longitude,
     # so it must be converted just like the regular RA and Dec.
-    major = 49 / 3600 / 0.005 / np.sin(s_dec / (180 / np.pi)) / 2.3548  # 49"/sin(dec) FWHM, in pixels, in Gaussian sigma instead of FWHM
-    minor = 49 / 3600 / 0.005 / 2.3548  # 49" FWHM, in pixels, in Gaussian sigma instead of FWHM
+    # Note: 49" is the untapered beam of the ST, 58" is the gaussian beam - Ciara Chisholm 
+    major = 49 / 3600 / 0.005 / np.sin(s_dec / (180 / np.pi)) / 2.3548  # 49"/sin(dec) FWHM, in pixels, in Gaussian sigma instead of FWHM. 
+    minor = 49 / 3600 / 0.005 / 2.3548  # 49" FWHM, in pixels, in Gaussian sigma instead of FWHM 
+    # 49"*(1degree/3600")*( 1 pixel/0.005 degrees)*(1 sigma or standard devation/2.3548 FWHM )
 
     # Using the SkyCoord proper motion attributes to convert the position angle to galactic coordinates
     # Nothing is actually moving here, but proper motion is just a 2D vector in the sky and so we can use it to convert our position angle
     # The magnitude of this 'proper motion' position angle vector isn't important, and neither are the units, since they cancel out later on.
     # What's important is that it begins at each source and points directly towards the celestial north pole.
     # noinspection PyUnresolvedReferences
-    celestial_north = SkyCoord(ra=s_ra, dec=s_dec, pm_ra_cosdec=0 * u.degree / u.s, pm_dec=90 * u.degree / u.s, frame='fk5', unit='degree')
-    galactic_celestial_north = celestial_north.galactic
-    gl_src = galactic_celestial_north.l.degree
-    gb_src = galactic_celestial_north.b.degree
+    # celestial_north = SkyCoord(ra=s_ra, dec=s_dec, pm_ra_cosdec=0 * u.degree / u.s, pm_dec=90 * u.degree / u.s, frame='fk5', unit='degree')
+    # The previous line was changed by Ciara Chisholm on Jan 22 2025 to the following line to better match the IDL code
+    celestial_north = SkyCoord(ra=s_ra, dec=s_dec, pm_ra_cosdec=0 * u.degree / u.s, pm_dec=1 * u.degree / u.s, frame='fk5', unit='degree')
+    galactic_celestial_north = celestial_north.galactic # I am guessing this gets the coordinates of the source 
+    gl_src = galactic_celestial_north.l.degree # I am guessing this returns the coordinate of the source in gal long
+    gb_src = galactic_celestial_north.b.degree # I am guessing this returns the coordinate of the source in gal lat
     # noinspection PyUnresolvedReferences
-    pm_long = float(galactic_celestial_north.pm_l_cosb * u.s / u.mas)
+    pm_long = float(galactic_celestial_north.pm_l_cosb * u.s / u.mas) # getting the proper motion of the source 
     # noinspection PyUnresolvedReferences
-    pm_lat = float(galactic_celestial_north.pm_b * u.s / u.mas)
+    pm_lat = float(galactic_celestial_north.pm_b * u.s / u.mas) # getting the proper motion of the source 
 
-    pa = -1 * np.arctan(pm_long / pm_lat)
+    pa = -1 * np.arctan(pm_long / pm_lat) # Getting the position angle
 
-    # Define elliptical Gaussian parameters:
+    # Define elliptical Gaussian parameters: 
+        # Note from Ciara Chisholm: There are the coefficients to define a 2d gaussian using the equation 
+        # A(x,y) = a(x-xo)^2 +b(x-xo)(y-yo) +c*y-yo)^2. See wikipedia page of a gaussian function for more details. 
     a = (np.cos(pa) ** 2 / (2 * minor ** 2)) + (np.sin(pa) ** 2 / (2 * major ** 2))
     b = (-1 * np.sin(2 * pa) / (4 * minor ** 2)) + (np.sin(2 * pa) / (4 * major ** 2))
     c = (np.sin(pa) ** 2 / (2 * minor ** 2)) + (np.cos(pa) ** 2 / (2 * major ** 2))
 
     # inv_gauss is an 'inverse' elliptical gaussian, meaning its pixel values get larger as you move further away from the centre
+    # Ciara Chisholm October 11 2024: This is in fact not a gaussian. This is a paraboloide. 
     inv_gauss = a * (s_x_array - s_centre_x) ** 2 + 2 * b * (s_x_array - s_centre_x) * (s_y_array - s_centre_y) + c * (s_y_array - s_centre_y) ** 2
     beam_area = 2 * np.pi * major * minor  # Beam area, units of pixels^2
 
@@ -78,7 +90,7 @@ def calculate_annulus(s_ra, s_dec, s_x_array, s_y_array, s_centre_x, s_centre_y,
     # Each element of this array is a 1 if it's inside a certain number of standard deviations away from the
     # centre of the elliptical gaussian (remember inv_gauss is an inverse elliptical gaussian and 2.35482 is the number to
     # convert FWHM to standard deviations) and a 0 if it's outside (i.e. a non-source pixel)
-    foreground_pixels = np.where(inv_gauss > outer_boundary**2 * 2.35482**2 / 8, 0, foreground_pixels)
+    foreground_pixels = np.where(inv_gauss > outer_boundary**2 * 2.35482**2 / 8, 0, foreground_pixels) # np.where(condition, value to set if true, value to set if False)
 
     # elements of source_pixels are 1 if they are inside the same standard deviation boundary as foreground pixels
     # AND where the value of the pixel is above the Jy threshold, and 0 otherwise
@@ -86,11 +98,11 @@ def calculate_annulus(s_ra, s_dec, s_x_array, s_y_array, s_centre_x, s_centre_y,
 
     # Trying to compare a NaN with a number (like threshold) will result in a warning, so this is a small workaround that
     # results in the same boolean array
-    stokes_not_nan_bool = ~np.isnan(s_stokes_i)  # This boolean array is true if the pixel is not a NaN
+    stokes_not_nan_bool = ~np.isnan(s_stokes_i)  # This boolean array is true if the pixel is not a NaN, "~" is another command for "Not"
     # This boolean array is true if the pixel is not a NaN and also greater than the threshold
     stokes_not_nan_bool[stokes_not_nan_bool] = s_stokes_i[stokes_not_nan_bool] > threshold
 
-    source_pixels = np.where(np.logical_and(foreground_pixels == 1, stokes_not_nan_bool), 1, source_pixels)  # calculating source_pixels
+    source_pixels = np.where(np.logical_and(foreground_pixels == 1, stokes_not_nan_bool), 1, source_pixels)  # calculating source_pixels, note: all source pixels were initially 0
 
     # Setting the NaNs equal to zero so they don't count as source pixels
     # THIS DOES NOT MEAN THE NaN PIXELS ARE NON-SOURCE PIXELS
@@ -319,5 +331,6 @@ def gauss_fit_2d(z_arr, x_arr, y_arr, par_estimate):
     y_std = popt[4]
     theta = popt[5]
     yfit = gaussian_2d((x_arr2d, y_arr2d), *popt).reshape(len(x_arr), len(y_arr))
+    
 
     return amp, xmean, ymean, x_std, y_std, theta, yfit

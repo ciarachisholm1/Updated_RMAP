@@ -21,6 +21,39 @@ def nround(number):
     else:
         return math.ceil(number)
 
+# Note from Ciara Chisholm: I don't think this is useful anymore.
+def IDL_round(number, num_decimal=0):
+    """This function was written by Ciara Chisholm as an alternative function to numpy's rounding function or python's built in rounding function. 
+    Numpy's rounding function rounds to the nearest even number (so 1.5 and 2.5 round to 2 and 0.5 rounds to 0), and python does not 
+    round up 0.5, it instead rounds down.  
+    
+    Input Parameters:
+        number(float): number to be rounded
+        
+        decimal (int): the number of decimal places to round to, default is 0. 
+    Returns:
+        Rounded number (float) """
+    from warnings import warn
+
+    # Splitting the number up into whole numbers and decimals
+    int_part, decimals = str(number).split(".")
+    
+    
+    #If there aren't enough decimals in the input number to round to the right number of sig digs, warning the user and returning the input number
+    if len(decimals) <= num_decimal:
+        warn("Insufficient number of decimals to round to the desired number, returning input number")
+        return number
+
+    if decimals[num_decimal]=="5": # Only doing the complicated procedure if the determining number is 5
+        #replace the 5 with 6 so that the round function will round to the correct number. 
+        decimals=decimals[:num_decimal]+"6" 
+        
+        new_number = float(int_part +"."+decimals)
+
+        return round(new_number, num_decimal)
+        
+    else:
+        return round(number, num_decimal) # No modifications need to be made
 
 def truncate(number):
     """I also had to write a function that truncated a float to an integer without rounding.
@@ -72,6 +105,8 @@ def string_normalise(string_bad, expected_len, negatives=False, front_load=False
 def idl_where(array_condition):
     flat_bool_array = array_condition.flatten()
     return flat_bool_array.nonzero()[0]
+
+
 
 
 def calc_background3(stamp, x_ann, y_ann):
