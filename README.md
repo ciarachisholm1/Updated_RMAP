@@ -64,6 +64,8 @@ This component takes the polarised candidate sourcelist and generates a series o
         - `MA1_sourcelist_revisit.dat` - A table which will only be created if the user flags any sources with the '1' or 'revisit' flag, for the purposes of running the program again with the pixel flagging feature (NOTE: the pixel flagging feature is not currently included in this version of the program)
     - If you want your data to be stored in another location, or if you already have it stored somewhere and don't want to move it, there is a file in the `program_code` directory called `config.py` which contains the default paths for input data, output data, the Chi table, and the Taylor17 catalogue. Any of these can be changed to the ABSOLUTE(!!) path location where you keep your data. The new locations must still follow the same naming and storage conventions as the default locations.
 
+NOTE: If the FITS files you are using are using the Plate Carrée projection, please ensure the reference pixel for latitude is at $0\degree$. See Section 2.8 from Calabretta et al. 2004 for details.
+
 ## Running Instructions
 
 NOTE: This program can not be run from an IDE like PyCharm. It must be run from the command line.
