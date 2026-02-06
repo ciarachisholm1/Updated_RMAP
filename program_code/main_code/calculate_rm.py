@@ -958,9 +958,15 @@ def pss_stokes_i_plot(stokes_i, x_long, y_lat, x_pix_max_i, y_pix_max_i, gauss_p
     """
     npix = 11
 
-    data = fh.cut_out_stamp(stokes_i, x_pix_max_i - npix + 1, x_pix_max_i + npix + 1, y_pix_max_i - npix + 1, y_pix_max_i + npix + 1)
-    long_arr = fh.cut_out_stamp(x_long, x_pix_max_i - npix + 1, x_pix_max_i + npix + 1, y_pix_max_i - npix + 1, y_pix_max_i + npix + 1)
-    lat_arr = fh.cut_out_stamp(y_lat, x_pix_max_i - npix + 1, x_pix_max_i + npix + 1, y_pix_max_i - npix + 1, y_pix_max_i + npix + 1)
+    # data = fh.cut_out_stamp(stokes_i, x_pix_max_i - npix + 1, x_pix_max_i + npix + 1, y_pix_max_i - npix + 1, y_pix_max_i + npix + 1)
+    # long_arr = fh.cut_out_stamp(x_long, x_pix_max_i - npix + 1, x_pix_max_i + npix + 1, y_pix_max_i - npix + 1, y_pix_max_i + npix + 1)
+    # lat_arr = fh.cut_out_stamp(y_lat, x_pix_max_i - npix + 1, x_pix_max_i + npix + 1, y_pix_max_i - npix + 1, y_pix_max_i + npix + 1)
+    
+    ### The following three lines were modified from the previous three lines by Ciara Chisholm on February 6th 2026
+    data = fh.cut_out_stamp(stokes_i, x_pix_max_i - npix , x_pix_max_i + npix , y_pix_max_i - npix , y_pix_max_i + npix )
+    long_arr = fh.cut_out_stamp(x_long, x_pix_max_i - npix , x_pix_max_i + npix,  y_pix_max_i - npix , y_pix_max_i + npix)
+    lat_arr = fh.cut_out_stamp(y_lat, x_pix_max_i - npix , x_pix_max_i + npix , y_pix_max_i - npix , y_pix_max_i + npix )
+
 
     levels = 2 ** np.arange(20)
 
@@ -2997,3 +3003,4 @@ def main(input_directory, output_directory, chitable_directory, fig_path):
                         max_long = np.max(lmax)
 
             print('\nRotation Measure analysis complete!')
+
