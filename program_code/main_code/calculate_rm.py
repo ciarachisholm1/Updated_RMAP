@@ -2533,7 +2533,7 @@ def main(input_directory, output_directory, chitable_directory, fig_path):
                         # pair_out_fits =out_FITS+pair_name+"/"
                         # Path(pair_out_fits).mkdir(parents=True, exist_ok=True) \
                             
-                        src_name = "src_"+ str(1+(source_num//2))
+                        src_name = "src_"+ i+1
                         src_out_fits =out_FITS+src_name+"/"
                         Path(src_out_fits).mkdir(parents=True, exist_ok=True)  
                         
@@ -2596,12 +2596,12 @@ def main(input_directory, output_directory, chitable_directory, fig_path):
                             hdr['CDELT3'] = 1
                             
                             hdr["POLCODE"]  = "I"
-                            if source_num%2 ==0:
-                                src_lbl = "a"
-                            else:
-                                src_lbl = "b"
+                            # if source_num%2 ==0:
+                            #     src_lbl = "a"
+                            # else:
+                            #     src_lbl = "b"
                                 
-                            object_name =  "M"+mosaic_name.upper()+"_"+ src_name+src_lbl
+                            object_name =  "M"+mosaic_name.upper()+"_"+ src_name#+src_lbl
                             hdr["FILENAME"] = object_name +"_SI_map"
                             hdr["OBJECT"]  = object_name
                             hdr["ORIGIN"] = "DRAO"
@@ -2674,7 +2674,7 @@ def main(input_directory, output_directory, chitable_directory, fig_path):
                             filename = object_name +"_RM_map.fits"
                             hdu.writeto(folder_dir+filename, overwrite=True)
                             
-                        # =============================================================================    
+                        # =============================================================================  
                         
                         
                         
@@ -3003,4 +3003,5 @@ def main(input_directory, output_directory, chitable_directory, fig_path):
                         max_long = np.max(lmax)
 
             print('\nRotation Measure analysis complete!')
+
 
