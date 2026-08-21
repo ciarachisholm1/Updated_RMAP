@@ -75,11 +75,11 @@ NOTE: This program can not be run from an IDE like PyCharm. It must be run from 
     python rmap.py
     ```
     - NOTE: I've had issues on Mac OS with this command running the program with the default installation of Python, which is usually some flavour of Python 2. In this case, you have to tell the computer to run the program with your new installation of Python 3. For example, `python3.9 rmap.py`
+   
+## Updated version 
+This program was updated by Ciara Chisholm over the course of her MSc. The modifications made to the RMAP program are detailed in the file named Detailed_expl_of_mods_to_RMAP.pdf. This is the original explanation provided in her MSc thesis, however in the final version of the thesis has a condensed version of the explanation. 
 
 ## Possible future improvements/fixes
 
 - The pixel flagging feature needs to be implemented.
-- Polarisation angles in the linear fit plot are not restricted to [0, 180], but the slopes are still correct
-- Polarisation angle error bars are too big, but `probfit` is still correct
-- Beam FWHM shape acts unpredictably sometimes
-- It might be worth it to get it running in an IDE...
+
