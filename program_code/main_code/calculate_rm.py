@@ -74,10 +74,7 @@ def read_pi_source_list_cd(path):
                'simax': np.array(simax),
                'stonmax': np.array(stonmax)}
     
-    # Adding by Ciara Chisholm, May 1st 2024 
-    # print(xpixmax,"xpixmax")
-    # print("l: ", lmax)
-    # print("b: ", bmax)
+   
     return pi_data
 
 
@@ -394,20 +391,11 @@ def plot_rm_map(rm_data, rm_text, rm_err_text, pa_text, pa_err_text, pi_units, g
     ax.set_ylabel('Latitude ($\degree$)')
     
     
-    # Added by Ciara Chisholm May 5th 2024
-    # xticks= ax.get_xticklabels()
-    
-    # print("L382: xticsk: ", xticks)
-    
-    # new_ticks = []
-    # for t in xticks:
-    #     new_ticks+= [f"%.2f"%t]
-    # ax.set_xticks(xticks)
-    # ax.set_xticklabels(new_ticks)
+
     
     masked_array = np.ma.masked_where(rm_data == 0, rm_data)
     
-    # print("masked_array: ", masked_array)
+    
     # cmap = copy.copy(cm.get_cmap('RdBu'))
     # The previous line was changed to the following line by Ciara Chisholm on May 27th 2024
     cmap = copy.copy(cm.get_cmap(CMAP))
@@ -1179,7 +1167,7 @@ def unwrap_pa_and_rm_calcs4(cut_qa, cut_qb, cut_qc, cut_qd, cut_ua, cut_ub, cut_
     
     # The following comment was added by Ciara Chisholm June 5th 2024
     # This does not quite match up with what the IDL code does, but I don't think 
-    #   the difference will make any difference in the code.
+    #   it will make any difference in the code.
 
     zero_mask = np.logical_and(q == 0, u == 0)
     if np.sum(zero_mask) > 0:  # If there is at least 1 zero in q or u
@@ -1860,9 +1848,7 @@ def initial_mask(mosaic,stokes, input_directory,  i, pi_data, print_mask_complet
     # Creating a list for every stokes band: 
     mask_width = 1 #number of pixels to mask out around the peak pixel (0=only the peak pixel,)
     bands = ['I', 'Q_A', 'Q_B', 'Q_C', 'Q_D', 'U_A', 'U_B', 'U_C', 'U_D']
-    mosaics_w_initial_masks = ["ij2", "g0", "g5", "g4", "v2", "ey2", "y1"]
-    # gives the source number i in the orignal code when you want the mask to be placed on the next source i+1. 
-    # pair_to_mask_by_mosaic = {"mij2":0, "mg0":26, "mg5":2, "mg4":0, "my1":0, "mv2":0, "mey2":2}
+   
     
     OG_vals, header = read_qu_data_cve(input_directory, mosaic)
     
@@ -2532,16 +2518,13 @@ def main(input_directory, output_directory, chitable_directory, fig_path):
                         Path(out_FITS).mkdir(parents=True, exist_ok=True)  
                         
                         
-                        # pair_name =  "Pair_"+ str(1+(source_num//2))
-                        # pair_out_fits =out_FITS+pair_name+"/"
-                        # Path(pair_out_fits).mkdir(parents=True, exist_ok=True) \
+                        
                             
                         src_name = "src_"+ str(i+1)
                         src_out_fits =out_FITS+src_name+"/"
                         Path(src_out_fits).mkdir(parents=True, exist_ok=True)  
                         
-                        # with fits.open("""/Users/ciarachisholm/Library/CloudStorage/OneDrive-UniversityofCalgary/Ciara's Research Cubby/VLASS/VLASS_G7_SI.fits""") as VLASSFITS:
-                        #     Vheader = VLASSFITS[0].header
+                        
                         
                         if create_FITS:
                             
@@ -2787,49 +2770,32 @@ def main(input_directory, output_directory, chitable_directory, fig_path):
                         
                         
                         
-                        # fig_folder_name = "ext_FITS_fixed"
-                        # # Saving figure code:
-                        # fig_dir = """/Users/ciarachisholm/Library/CloudStorage/OneDrive-UniversityofCalgary/Ciara's Research Cubby/Figures/RM_plots/"""+fig_folder_name+ "/RMs/M" + mosaic_name.upper()  
-                        
+                     
                         
                         if save_figs_auto:
                             if fig_path =="":
                                 fig_path = out_dir.copy()
                             fig_dir = fig_path + "Figures/" 
                         
-                            # fig_dir_pdf = fig_dir +"/PDFs"
-                            # fig_dir_svg = fig_dir  +"/SVGs"
+                            
                             
                             makedirs(fig_dir, exist_ok=True)
-                            # makedirs(fig_dir_pdf, exist_ok=True)
-                            # makedirs(fig_dir_svg, exist_ok=True)
                             
-                            filename = "src_"+str(i) 
+                            
+                            filename = "src_"+str(i+1) 
                             
                             if flag[i]==0:
                                 passfail = "_passed"
                             else:
                                 passfail = "_failed" + str(flag[i])
-                            # filename name code below was specifically for double sources
-                            # if i%2 ==0:
-                            #     twin_number = "1"
-                            # else:
-                            #     twin_number = str(2)
                             
-                            # if flag[i]==0:
-                            #     passfail = "Passed"
-                            # else:
-                            #     passfail = "Failed _" + str(flag[i])
-                            # filename = "/Pair_" +str(i//2 +1) +"_Twin" +twin_number+"_" +passfail
                             
                             
                             filename += passfail
                             
                             plt.savefig(fig_dir+ filename +".pdf")#, format="pdf")
                         
-                            # plt.savefig(fig_dir_pdf + filename +".pdf")#, format="pdf")
-                            # plt.savefig(fig_dir_svg + filename +".svg")#, format="svg")
-                            # plt.show()
+                            
                         plt.close()
                         
                     else:
@@ -2874,10 +2840,7 @@ def main(input_directory, output_directory, chitable_directory, fig_path):
                     outname = 'recalc'
             else: outname = 'recalc'
 
-            # out_dir = f'{output_directory}{mosaic_name}'
-
-            # # If the (mosaic specific) directory we want to put this list in doesn't exist yet, make it:
-            # Path(out_dir).mkdir(parents=True, exist_ok=True)
+            
 
             file_out = f'_RMlist_{outname}.dat'
             out_path = f'{out_dir}/{mosaic_caps}{file_out}'
