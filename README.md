@@ -78,6 +78,8 @@ NOTE: This program can not be run from an IDE like PyCharm. It must be run from 
    
 ## Updated version 
 This program was updated by Ciara Chisholm over the course of her MSc. The modifications made to the RMAP program are detailed in the file named `Detailed_expl_of_mods_to_RMAP.pdf`. This is the original explanation provided in her initial MSc thesis, however in the final version of the thesis has a condensed version of the explanation. Therefore the detailed explanation is provided here. 
+#### User options 
+To turn on masking of the second source in the pair, change the variable "mask_second" to True on line 1915 or `calculate_rm.py`. Note, the mask is removed when the RM of the second source is determined. To save the plots produced by the RMAP automatically, change the varaible "save_figs_auto" on line 1918 to True. To stop the FITS files of the postage stamps from being saved, change "create_fits" on line 1923 to False. To have the RMAP run without user input (i.e. without verifying the source flags), change the variable "get_user_input" on line 1924 to False. To have the plots produced with a black background, set the variable "light_background" on line 1925 to False. 
 
 ## Possible future improvements/fixes
 
